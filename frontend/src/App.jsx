@@ -19,33 +19,15 @@ export default function App() {
     setBets((prev) => [...prev, bet]);
   };
 
+  const handleDelete = (id) => {
+    setBets((prev) => prev.filter((bet) => bet.id !== id));
+  };
+
   return (
     <div style={{ padding: "1rem" }}>
       <h1>📊 Bet Tracker</h1>
-      <BetForm onNewBet={handleNewBet} />
-      <BetTable bets={bets} />
+      <BetForm onNewBet={(bet) => setBets((prev) => [...prev, bet])} />
+      <BetTable bets={bets} onDelete={handleDelete} />
     </div>
   );
 }
-
-
-// import { useEffect, useState } from "react";
-// import { fetchBets } from "./api";
-// import BetForm from "./components/BetForm";
-// import BetTable from "./components/BetTable";
-
-// export default function App() {
-//   const [bets, setBets] = useState([]);
-
-//   useEffect(() => {
-//     fetchBets().then((res) => setBets(res.data));
-//   }, []);
-
-//   return (
-//     <div style={{ padding: "1rem" }}>
-//       <h1>📊 Bet Tracker</h1>
-//       <BetForm onNewBet={(bet) => setBets((prev) => [...prev, bet])} />
-//       <BetTable bets={bets} />
-//     </div>
-//   );
-// }

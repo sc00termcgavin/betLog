@@ -1,5 +1,5 @@
 # app/api/bets.py
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app import models, schemas, database
 
@@ -44,3 +44,12 @@ def create_bet(bet: schemas.BetCreate, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(new_bet)
     return new_bet
+
+@router.delete("/{bet_id}", response_model=schemas.Bet)
+def delete_bet(bet_id: int, db: Session = Depends(get_db)):
+    bet = db.query(models.Bet).filter(models.Bet.id == bet_id).first()
+    if not bet:
+        raise HTTPException(status_code=404, detail="Bet not found")
+    db.delete(bet)
+    db.commit()
+    return bet

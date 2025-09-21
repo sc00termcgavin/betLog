@@ -1,6 +1,16 @@
-// src/components/BetTable.jsx
-export default function BetTable({ bets }) {
+import { deleteBet } from "../api";
+
+export default function BetTable({ bets, onDelete }) {
   if (!bets || bets.length === 0) return <p>No bets yet.</p>;
+
+  const handleDelete = async (id) => {
+    try {
+      await deleteBet(id);
+      onDelete(id);
+    } catch (err) {
+      console.error("❌ Error deleting bet:", err.response?.data || err.message);
+    }
+  };
 
   return (
     <table border="1" cellPadding="6" style={{ borderCollapse: "collapse" }}>
@@ -15,11 +25,10 @@ export default function BetTable({ bets }) {
           <th>Odds</th>
           <th>Stake</th>
           <th>Result</th>
-          <th>Bonus</th>
-          <th>Decimal</th>
           <th>Payout</th>
           <th>Net PnL</th>
           <th>Cumulative PnL</th>
+          <th>Actions</th>
         </tr>
       </thead>
       <tbody>
@@ -34,11 +43,12 @@ export default function BetTable({ bets }) {
             <td>{bet.odds}</td>
             <td>{bet.stake}</td>
             <td>{bet.result}</td>
-            <td>{bet.bonus}</td>
-            <td>{bet.decimal}</td>
             <td>{bet.payout}</td>
             <td>{bet.netPnL}</td>
             <td>{bet.cumulativePnL}</td>
+            <td>
+              <button onClick={() => handleDelete(bet.id)}>Delete</button>
+            </td>
           </tr>
         ))}
       </tbody>
