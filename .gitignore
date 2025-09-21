@@ -1,0 +1,22 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.db
+
+# Virtual env
+.venv/
+env/
+venv/
+betlog-env/
+
+# Alembic
+alembic/versions/*.pyc
+
+# Node / React
+frontend/node_modules/
+frontend/dist/
+
+# Mac / OS junk
+.DS_Store
