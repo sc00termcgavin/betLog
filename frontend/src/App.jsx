@@ -1,35 +1,51 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useEffect, useState } from "react";
+import { fetchBets } from "./api";
+import BetForm from "./components/BetForm";
+import BetTable from "./components/BetTable";
 
-function App() {
-  const [count, setCount] = useState(0)
+export default function App() {
+  const [bets, setBets] = useState([]);
+
+  useEffect(() => {
+    loadBets();
+  }, []);
+
+  const loadBets = async () => {
+    const res = await fetchBets();
+    setBets(res.data);
+  };
+
+  const handleNewBet = (bet) => {
+    setBets((prev) => [...prev, bet]);
+  };
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <div style={{ padding: "1rem" }}>
+      <h1>📊 Bet Tracker</h1>
+      <BetForm onNewBet={handleNewBet} />
+      <BetTable bets={bets} />
+    </div>
+  );
 }
 
-export default App
+
+// import { useEffect, useState } from "react";
+// import { fetchBets } from "./api";
+// import BetForm from "./components/BetForm";
+// import BetTable from "./components/BetTable";
+
+// export default function App() {
+//   const [bets, setBets] = useState([]);
+
+//   useEffect(() => {
+//     fetchBets().then((res) => setBets(res.data));
+//   }, []);
+
+//   return (
+//     <div style={{ padding: "1rem" }}>
+//       <h1>📊 Bet Tracker</h1>
+//       <BetForm onNewBet={(bet) => setBets((prev) => [...prev, bet])} />
+//       <BetTable bets={bets} />
+//     </div>
+//   );
+// }
