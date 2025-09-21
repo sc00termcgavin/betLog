@@ -7,3 +7,5 @@ export const fetchBets = () => API.get("/bets/");   // ✅ add slash
 export const addBet = (bet) => API.post("/bets/", bet); // ✅ add slash
 
 export const deleteBet = (id) => API.delete(`/bets/${id}`);
+
+export const updateBet = (id, bet) => API.put(`/bets/${id}`, bet);

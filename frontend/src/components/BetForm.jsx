@@ -182,6 +182,7 @@ export default function BetForm({ onNewBet }) {
         <option value="win">Win</option>
         <option value="loss">Loss</option>
         <option value="push">Push</option>
+        <option value="open">Open</option>
       </select>
       {/* ✅ Bonus bet checkbox */}
       <label style={{ marginLeft: "1rem" }}>

@@ -27,7 +27,13 @@ export default function App() {
     <div style={{ padding: "1rem" }}>
       <h1>📊 Bet Tracker</h1>
       <BetForm onNewBet={(bet) => setBets((prev) => [...prev, bet])} />
-      <BetTable bets={bets} onDelete={handleDelete} />
+      <BetTable
+        bets={bets}
+        onDelete={(id) => setBets((prev) => prev.filter((b) => b.id !== id))}
+        onUpdate={(updated) =>
+          setBets((prev) => prev.map((b) => (b.id === updated.id ? updated : b)))
+        }
+      />
     </div>
   );
 }

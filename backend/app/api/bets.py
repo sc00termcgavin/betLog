@@ -178,3 +178,30 @@ def recalc_bets():
     """Manually trigger a recalculation of all bets."""
     result = recalc_all_bets()
     return result
+
+@router.put("/{bet_id}", response_model=schemas.Bet)
+def update_bet(bet_id: int, bet_update: schemas.BetCreate, db: Session = Depends(get_db)):
+    """Update an existing bet and recalc all PnL."""
+    bet = db.query(models.Bet).filter(models.Bet.id == bet_id).first()
+    if not bet:
+        raise HTTPException(status_code=404, detail="Bet not found")
+
+    # Update fields
+    bet.date = bet_update.date
+    bet.sportsbook = bet_update.sportsbook
+    bet.league = bet_update.league
+    bet.market = bet_update.market
+    bet.pick = bet_update.pick
+    bet.odds = bet_update.odds
+    bet.stake = bet_update.stake
+    bet.result = bet_update.result
+    bet.bonus = bet_update.bonus
+
+    db.commit()
+
+    # 🔄 recalc everything so cumulativePnL stays correct
+    from app.utils import recalc_all_bets
+    recalc_all_bets()
+
+    db.refresh(bet)
+    return bet
