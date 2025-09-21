@@ -11,11 +11,11 @@ class BetBase(BaseModel):
     pick: str
     odds: float
     stake: float
-    result: str
+    result: str         # "win", "loss", "push"
 
 # For creating a bet (frontend only needs these fields)
 class BetCreate(BetBase):
-    pass
+    bonus: float = 0.0
 
 # For returning a bet from the DB (includes calculated fields + ID)
 class Bet(BetBase):

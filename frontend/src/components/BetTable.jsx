@@ -1,3 +1,4 @@
+// src/components/BetTable.jsx
 import { deleteBet } from "../api";
 
 export default function BetTable({ bets, onDelete }) {
@@ -24,6 +25,7 @@ export default function BetTable({ bets, onDelete }) {
           <th>Pick</th>
           <th>Odds</th>
           <th>Stake</th>
+          <th>Bonus</th>
           <th>Result</th>
           <th>Payout</th>
           <th>Net PnL</th>
@@ -42,6 +44,7 @@ export default function BetTable({ bets, onDelete }) {
             <td>{bet.pick}</td>
             <td>{bet.odds}</td>
             <td>{bet.stake}</td>
+            <td>{bet.bonus > 0 ? "✅" : ""}</td>
             <td>{bet.result}</td>
             <td>{bet.payout}</td>
             <td>{bet.netPnL}</td>
