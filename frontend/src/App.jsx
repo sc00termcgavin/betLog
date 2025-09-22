@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { fetchBets } from "./api";
 import BetForm from "./components/BetForm";
 import BetTable from "./components/BetTable";
+import AIDemo from "./components/AIDemo";
+
 
 export default function App() {
   const [bets, setBets] = useState([]);
@@ -34,6 +36,9 @@ export default function App() {
           setBets((prev) => prev.map((b) => (b.id === updated.id ? updated : b)))
         }
       />
+      <div style={{ marginTop: "2rem" }}>
+        <AIDemo />
+      </div>
     </div>
   );
 }

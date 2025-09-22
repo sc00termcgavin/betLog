@@ -24,3 +24,7 @@ frontend/.env.local
 
 # Mac / OS junk
 .DS_Store
+
+# .env files
+.env
+*.env
