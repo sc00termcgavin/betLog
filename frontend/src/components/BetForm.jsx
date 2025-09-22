@@ -124,22 +124,32 @@ export default function BetForm({ onNewBet }) {
         onChange={handleChange}
         required
       />
-      <input
-        type="text"
-        name="sportsbook"
-        placeholder="Sportsbook"
-        value={form.sportsbook}
-        onChange={handleChange}
-        required
-      />
-      <input
-        type="text"
+        <select
+          name="sportsbook"
+          value={form.sportsbook}
+          onChange={handleChange}
+          required
+          style={{ marginRight: "0.5rem" }}
+        >
+          <option value="">Select Sportsbook</option>
+          <option value="Fanduel">Fanduel</option>
+          <option value="DraftKings">DraftKings</option>
+          <option value="Bet365">Bet365</option>
+          <option value="HardRock Bet">HardRock Bet</option>
+          <option value="ESPNBet">ESPNBet</option>
+          <option value="Fanatics">Fanatics</option>
+        </select>
+      <select
         name="league"
-        placeholder="League"
         value={form.league}
         onChange={handleChange}
         required
-      />
+        style={{ marginRight: "0.5rem" }}
+      >
+        <option value="">Select League</option>
+        <option value="MLB">MLB</option>
+        <option value="NFL">NFL</option>
+      </select>
       <input
         type="text"
         name="market"
