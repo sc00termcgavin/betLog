@@ -189,6 +189,34 @@ import { useState } from "react";
 import { deleteBet, updateBet } from "../api";
 
 export default function BetTable({ bets, onDelete, onUpdate }) {
+  // --- Bets per market ---
+  const marketCounts = bets.reduce((acc, bet) => {
+    if (bet.market) {
+      acc[bet.market] = (acc[bet.market] || 0) + 1;
+    }
+    return acc;
+  }, {});
+  // --- Market counts display ---
+  const marketStyle = {
+    display: "flex",
+    gap: "1.5rem",
+    marginBottom: "0.5rem",
+    fontWeight: "normal",
+    fontSize: "1rem",
+    flexWrap: "wrap",
+  };
+  const marketItems = Object.entries(marketCounts).map(([name, count]) => (
+    <span key={name}>
+      {name}: <span style={{ color: "#ff9800" }}>{count}</span>
+    </span>
+  ));
+  // --- Bets per sportsbook ---
+  const sportsbookCounts = bets.reduce((acc, bet) => {
+    if (bet.sportsbook) {
+      acc[bet.sportsbook] = (acc[bet.sportsbook] || 0) + 1;
+    }
+    return acc;
+  }, {});
   // --- KPI calculations ---
   // Exclude bonus bets from total stake
   const totalStake = bets.reduce((sum, bet) => sum + (bet.bonus > 0 ? 0 : parseFloat(bet.stake || 0)), 0);
@@ -253,6 +281,7 @@ export default function BetTable({ bets, onDelete, onUpdate }) {
     marginBottom: "1rem",
     fontWeight: "bold",
     fontSize: "1.1rem",
+    flexWrap: "wrap",
   };
 
   const kpiItem = (label, value, unit = "") => (
@@ -261,6 +290,21 @@ export default function BetTable({ bets, onDelete, onUpdate }) {
     </span>
   );
 
+  // --- Sportsbook counts display ---
+  const sportsbookStyle = {
+    display: "flex",
+    gap: "1.5rem",
+    marginBottom: "0.5rem",
+    fontWeight: "normal",
+    fontSize: "1rem",
+    flexWrap: "wrap",
+  };
+  const sportsbookItems = Object.entries(sportsbookCounts).map(([name, count]) => (
+    <span key={name}>
+      {name}: <span style={{ color: "#28a745" }}>{count}</span>
+    </span>
+  ));
+
   return (
     <>
       <div style={kpiStyle}>
@@ -268,6 +312,12 @@ export default function BetTable({ bets, onDelete, onUpdate }) {
         {kpiItem("Total Stake", totalStake.toFixed(2), "")}
         {kpiItem("Win %", winPct, "%")}
         {kpiItem("ROI", roi, "%")}
+      </div>
+      <div style={sportsbookStyle}>
+        {sportsbookItems.length > 0 ? sportsbookItems : <span>No bets per sportsbook yet.</span>}
+      </div>
+      <div style={marketStyle}>
+        {marketItems.length > 0 ? marketItems : <span>No bets per market yet.</span>}
       </div>
       <table border="1" cellPadding="6" style={{ borderCollapse: "collapse", width: "100%" }}>
         <thead>
