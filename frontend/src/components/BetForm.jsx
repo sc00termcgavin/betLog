@@ -150,14 +150,20 @@ export default function BetForm({ onNewBet }) {
         <option value="MLB">MLB</option>
         <option value="NFL">NFL</option>
       </select>
-      <input
-        type="text"
+      <select
         name="market"
-        placeholder="Market"
         value={form.market}
         onChange={handleChange}
         required
-      />
+        style={{ marginRight: "0.5rem" }}
+      >
+        <option value="">Select Market</option>
+        <option value="Moneyline">Moneyline</option>
+        <option value="Spread">Spread</option>
+        <option value="Total O/U">Total O/U</option>
+        <option value="Props">Props</option>
+        <option value="Parlay">Parlay</option>
+      </select>
       <input
         type="text"
         name="pick"
