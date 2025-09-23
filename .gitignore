@@ -14,6 +14,11 @@ pyenv/
 
 # Alembic
 alembic/versions/*.pyc
+alembic/__pycache__/
+alembic/versions/__pycache__/
+
+# SQLite database files
+*.db
 
 # Node / React
 frontend/node_modules/
