@@ -3,7 +3,9 @@
 from app.database import SessionLocal
 from app import models
 
+# --------------------------------
 # --- Odds Conversion ---
+# --------------------------------
 def to_decimal(odds: float) -> float:
     """
     Convert odds to decimal:
@@ -17,8 +19,9 @@ def to_decimal(odds: float) -> float:
     return float(odds)  # assume already decimal
 
 
+# --------------------------------
 # --- Calculation for a single bet ---
-
+# --------------------------------
 def calc_fields(stake: float, odds: float, result: str, bonus: float = 0.0):
     """
     Given stake, odds, result, and optional bonus:
@@ -92,3 +95,27 @@ def recalc_all_bets():
         return {"status": "success", "bets_updated": len(bets)}
     finally:
         db.close()
+
+
+# --------------------------------
+# --- Arbitrage Profit Calculator ---
+# --------------------------------
+def calc_arbitrage_profit(bets):
+    """
+    Given all bets in a group, compute guaranteed profit.
+    We assume:
+      - You risk the sum of all stakes
+      - In any outcome, one leg wins and pays out
+    Guaranteed profit = min(win_profit across all legs)
+    """
+    if not bets:
+        return None
+
+    total_stake = sum(float(b.stake) for b in bets)
+    profits = []
+
+    for b in bets:
+        win_profit = float(b.payout or 0) - total_stake
+        profits.append(win_profit)
+
+    return round(min(profits), 2)
