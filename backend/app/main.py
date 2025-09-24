@@ -1,6 +1,6 @@
 # app/main.py
 from fastapi import FastAPI
-from app.api import bets, ai
+from app.api import bets, ai, arbitrage
 from app.database import Base, engine
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -21,6 +21,8 @@ app.add_middleware(
 # Register routes
 app.include_router(bets.router, prefix="/bets", tags=["bets"])
 app.include_router(ai.router, prefix="", tags=["ai"])  # 👈 add AI router
+# app.include_router(arbitrage.router, prefix="/arbs", tags=["arbitrage"])
+app.include_router(arbitrage.router)
 
 @app.get("/")
 def root():

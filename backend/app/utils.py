@@ -56,29 +56,37 @@ def calc_fields(stake: float, odds: float, result: str, bonus: float = 0.0):
     return round(dec, 4), payout, net
 
 
-# --- Recalc for all bets in DB ---
 
+#--------------------------------
+# --- Recalc for all bets in DB ---
+#--------------------------------
 def recalc_all_bets():
     """
     Recalculate decimal, payout, netPnL, cumulativePnL for all bets.
     Ensures cumulativePnL stays consistent after inserts/deletes.
     """
-    
     db = SessionLocal()
     try:
         bets = db.query(models.Bet).order_by(models.Bet.id.asc()).all()
         cumulative = 0.0
         for b in bets:
-            dec, payout, net = calc_fields(b.stake, b.odds, b.result, b.bonus)
+            # cast stake/bonus to float in case they come back as Decimal
+            dec, payout, net = calc_fields(
+                float(b.stake),
+                float(b.odds),
+                b.result,
+                float(b.bonus or 0.0)
+            )
 
             # Only settled bets affect cumulative
             if (b.result or "").lower() != "open":
-                cumulative = round(cumulative + net, 2)
+                cumulative = round(float(cumulative) + float(net), 2)
 
-            b.decimal = dec
-            b.payout = payout
-            b.netPnL = net
-            b.cumulativePnL = cumulative
+            # store everything back as float
+            b.decimal = float(dec)
+            b.payout = float(payout)
+            b.netPnL = float(net)
+            b.cumulativePnL = float(cumulative)
 
         db.commit()
         return {"status": "success", "bets_updated": len(bets)}

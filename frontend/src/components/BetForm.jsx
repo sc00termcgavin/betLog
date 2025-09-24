@@ -1,67 +1,3 @@
-// // src/components/BetForm.jsx
-// import { useState } from "react";
-// import { addBet } from "../api";
-
-// export default function BetForm({ onNewBet }) {
-//   const [form, setForm] = useState({
-//     date: "",
-//     sportsbook: "",
-//     league: "",
-//     market: "",
-//     pick: "",
-//     odds: "",
-//     stake: "",
-//     result: "",
-//     bonus: false, // ✅ default false
-//   });
-
-//   const handleChange = (e) => {
-//     setForm({ ...form, [e.target.name]: e.target.value });
-//   };
-
-//   const handleSubmit = async (e) => {
-//     e.preventDefault();
-//     try {
-//         const payload = {
-//         ...form,
-//         odds: parseFloat(form.odds),
-//         stake: parseFloat(form.stake),
-//         };
-//         const res = await addBet(payload);
-//         onNewBet(res.data);
-//         setForm({
-//         date: "",
-//         sportsbook: "",
-//         league: "",
-//         market: "",
-//         pick: "",
-//         odds: "",
-//         stake: "",
-//         result: "",
-//         });
-//     } catch (err) {
-//         console.error("❌ Error adding bet:", err.response?.data || err.message);
-//     }
-//     };
-
-//   return (
-//     <form onSubmit={handleSubmit} style={{ marginBottom: "1rem" }}>
-//       {Object.keys(form).map((field) => (
-//         <input
-//           key={field}
-//           type={field === "date" ? "date" : "text"}
-//           name={field}
-//           placeholder={field}
-//           value={form[field]}
-//           onChange={handleChange}
-//           required
-//           style={{ marginRight: "0.5rem" }}
-//         />
-//       ))}
-//       <button type="submit">Add Bet</button>
-//     </form>
-//   );
-// }
 // src/components/BetForm.jsx
 import { useState } from "react";
 import { addBet } from "../api";
@@ -76,16 +12,19 @@ export default function BetForm({ onNewBet }) {
     odds: "",
     stake: "",
     result: "",
-    bonus: false, // ✅ default false
+    bonus: false,            // bonus = checkbox
+    is_arbitrage: false,     
+    arb_group_id: "",        
+    guaranteed_profit: ""    
   });
 
-  const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    setForm({
-      ...form,
-      [name]: type === "checkbox" ? checked : value,
-    });
-  };
+  // const handleChange = (e) => {
+  //   const { name, value, type, checked } = e.target;
+  //   setForm({
+  //     ...form,
+  //     [name]: type === "checkbox" ? checked : value,
+  //   });
+  // };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -95,6 +34,11 @@ export default function BetForm({ onNewBet }) {
         odds: parseFloat(form.odds),
         stake: parseFloat(form.stake),
         bonus: form.bonus ? parseFloat(form.stake) : 0.0, // ✅ send stake as bonus amount if checked
+        is_arbitrage: !!form.is_arbitrage,
+        arb_group_id: form.arb_group_id ? parseInt(form.arb_group_id, 10) : null,
+        guaranteed_profit: form.guaranteed_profit
+          ? parseFloat(form.guaranteed_profit)
+          : null,
       };
       const res = await addBet(payload);
       onNewBet(res.data);
@@ -109,6 +53,9 @@ export default function BetForm({ onNewBet }) {
         stake: "",
         result: "",
         bonus: false,
+        is_arbitrage: false,
+        arb_group_id: "",
+        guaranteed_profit: "",
       });
     } catch (err) {
       console.error("❌ Error adding bet:", err.response?.data || err.message);
@@ -121,13 +68,15 @@ export default function BetForm({ onNewBet }) {
         type="date"
         name="date"
         value={form.date}
-        onChange={handleChange}
+        //onChange={handleChange}
+        onChange={(e) => setForm({ ...form, date: e.target.value })}
         required
       />
         <select
           name="sportsbook"
           value={form.sportsbook}
-          onChange={handleChange}
+          //onChange={handleChange}
+          onChange={(e) => setForm({ ...form, sportsbook: e.target.value })}
           required
           style={{ marginRight: "0.5rem" }}
         >
@@ -142,7 +91,8 @@ export default function BetForm({ onNewBet }) {
       <select
         name="league"
         value={form.league}
-        onChange={handleChange}
+        //onChange={handleChange}
+        onChange={(e) => setForm({ ...form, league: e.target.value })}
         required
         style={{ marginRight: "0.5rem" }}
       >
@@ -153,7 +103,8 @@ export default function BetForm({ onNewBet }) {
       <select
         name="market"
         value={form.market}
-        onChange={handleChange}
+        //onChange={handleChange}
+        onChange={(e) => setForm({ ...form, market: e.target.value })}
         required
         style={{ marginRight: "0.5rem" }}
       >
@@ -169,7 +120,8 @@ export default function BetForm({ onNewBet }) {
         name="pick"
         placeholder="Pick"
         value={form.pick}
-        onChange={handleChange}
+        //onChange={handleChange}
+        onChange={(e) => setForm({ ...form, pick: e.target.value })}
         required
       />
       <input
@@ -177,7 +129,8 @@ export default function BetForm({ onNewBet }) {
         name="odds"
         placeholder="Odds"
         value={form.odds}
-        onChange={handleChange}
+        //onChange={handleChange}
+        onChange={(e) => setForm({ ...form, odds: e.target.value })}
         required
       />
       <input
@@ -185,13 +138,15 @@ export default function BetForm({ onNewBet }) {
         name="stake"
         placeholder="Stake"
         value={form.stake}
-        onChange={handleChange}
+        //onChange={handleChange}
+        onChange={(e) => setForm({ ...form, stake: e.target.value })}
         required
       />
       <select
         name="result"
         value={form.result}
-        onChange={handleChange}
+        //onChange={handleChange}
+        onChange={(e) => setForm({ ...form, result: e.target.value })}
         required
       >
         <option value="">Result</option>
@@ -206,10 +161,64 @@ export default function BetForm({ onNewBet }) {
           type="checkbox"
           name="bonus"
           checked={form.bonus}
-          onChange={handleChange}
+          //onChange={handleChange}
+          onChange={(e) => setForm({ ...form, bonus: e.target.checked })}
         />
         Bonus Bet
       </label>
+      {/* ✅ Arbitrage checkbox */}
+      <label style={{ marginLeft: "1rem" }}>
+        <input
+          type="checkbox"
+          name="is_arbitrage"
+          checked={form.is_arbitrage}
+          //onChange={handleChange}
+          onChange={(e) => setForm({ ...form, is_arbitrage: e.target.checked })}
+        />
+        Arbitrage Bet
+      </label>
+      <input
+        type="number"
+        name="arb_group_id"
+        placeholder="Group ID"
+        value={form.arb_group_id}
+        onChange={(e) => setForm({ ...form, arb_group_id: e.target.value })}
+        style={{ marginLeft: "1rem", width: "80px" }}
+      />
+      <input
+        type="number"
+        step="0.01"
+        name="guaranteed_profit"
+        placeholder="Profit"
+        value={form.guaranteed_profit}
+        onChange={(e) =>
+          setForm({ ...form, guaranteed_profit: e.target.value })
+        }
+        style={{ marginLeft: "1rem", width: "100px" }}
+      />
+      {/* Only show arb details if checked */}
+      {/* {form.is_arbitrage && (
+        <>
+          <input
+            type="number"
+            name="arb_group_id"
+            placeholder="Group ID"
+            value={form.arb_group_id}
+            onChange={handleChange}
+            style={{ marginLeft: "1rem" }}
+          />
+          <input
+            type="number"
+            step="0.01"
+            name="guaranteed_profit"
+            placeholder="Guaranteed Profit"
+            value={form.guaranteed_profit}
+            onChange={handleChange}
+            style={{ marginLeft: "0.5rem" }}
+          />
+        </>
+      )} */}
+      
       <button type="submit" style={{ marginLeft: "1rem" }}>
         Add Bet
       </button>
