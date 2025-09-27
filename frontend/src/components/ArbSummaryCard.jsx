@@ -1,91 +1,11 @@
-// // src/components/ArbSummaryCard.jsx
-// import React from "react";
-
-// function calcProfit(stake, odds) {
-//   if (!stake || !odds) return 0;
-//   const s = parseFloat(stake);
-//   const o = parseFloat(odds);
-//   if (o > 0) {
-//     return (s * o) / 100; // e.g. +425
-//   } else {
-//     return (s * 100) / Math.abs(o); // e.g. -300
-//   }
-// }
-
-// export default function ArbSummaryCard({ groupId, bets }) {
-//   if (!bets || bets.length === 0) return null;
-
-//   const totalStake = bets.reduce((sum, b) => sum + parseFloat(b.stake || 0), 0);
-
-//   // Calculate payouts + profits
-//   const enriched = bets.map((b) => {
-//     const profit = calcProfit(b.stake, b.odds);
-//     const payout = parseFloat(b.stake) + profit;
-//     return { ...b, profit, payout };
-//   });
-
-//   // For each outcome, calculate net profit = winner.profit - sum(other stakes)
-//   const scenarioProfits = enriched.map((winner, i) => {
-//     const otherStakes = enriched
-//       .filter((_, j) => j !== i)
-//       .reduce((sum, b) => sum + parseFloat(b.stake || 0), 0);
-//     return winner.profit - otherStakes;
-//   });
-
-//   const guaranteedProfit = Math.min(...scenarioProfits);
-//   const profitPct = totalStake > 0 ? (guaranteedProfit / totalStake) * 100 : 0;
-
-//   const cardStyle = {
-//     border: "1px solid #ccc",
-//     borderRadius: "8px",
-//     padding: "1rem",
-//     marginTop: "1rem",
-//     background: "#fafafa",
-//     color: "#222", 
-//   };
-
-//   const betRowStyle = {
-//     display: "flex",
-//     justifyContent: "space-between",
-//     padding: "0.5rem 0",
-//     borderBottom: "1px solid #eee",
-//   };
-
-//   return (
-//     <div style={cardStyle}>
-//       <h4>Arbitrage Group {groupId}</h4>
-//       {enriched.map((b) => (
-//         <div key={b.id} style={betRowStyle}>
-//           <div>
-//             <strong>{b.sportsbook}</strong> – {b.pick} ({b.odds})
-//           </div>
-//           <div>Stake: ${parseFloat(b.stake).toFixed(2)}</div>
-//           <div>Payout: ${b.payout.toFixed(2)}</div>
-//         </div>
-//       ))}
-
-//       <div style={{ marginTop: "1rem", fontWeight: "bold" }}>
-//         <div>Total Stake: ${totalStake.toFixed(2)}</div>
-//         <div style={{ color: guaranteedProfit >= 0 ? "green" : "red" }}>
-//           Guaranteed Profit: ${guaranteedProfit.toFixed(2)} ({profitPct.toFixed(2)}%)
-//         </div>
-//       </div>
-//     </div>
-//   );
-// }
-
-// src/components/ArbSummaryCard.jsx
-import React from "react";
-
 function calcProfit(stake, odds) {
   if (!stake || !odds) return 0;
   const s = parseFloat(stake);
   const o = parseFloat(odds);
   if (o > 0) {
-    return (s * o) / 100; // positive odds
-  } else {
-    return (s * 100) / Math.abs(o); // negative odds
+    return (s * o) / 100;
   }
+  return (s * 100) / Math.abs(o);
 }
 
 export default function ArbSummaryCard({ groupId, bets }) {
@@ -93,7 +13,6 @@ export default function ArbSummaryCard({ groupId, bets }) {
 
   const totalStake = bets.reduce((sum, b) => sum + parseFloat(b.stake || 0), 0);
 
-  // Attach profit + payout based on actual result
   const enriched = bets.map((b) => {
     const profit = calcProfit(b.stake, b.odds);
     let payout = 0;
@@ -103,55 +22,64 @@ export default function ArbSummaryCard({ groupId, bets }) {
     } else if (b.result === "push") {
       payout = parseFloat(b.stake);
     } else if (b.result === "open") {
-      payout = 0; // or stake, depending how you want to show pending bets
+      payout = 0;
     } else {
-      payout = 0; // loss
+      payout = 0;
     }
 
     return { ...b, profit, payout };
   });
 
-  const guaranteedProfit = enriched.reduce(
+  const netProfit = enriched.reduce(
     (sum, b) => sum + (b.payout - parseFloat(b.stake || 0)),
-    0
+    0,
   );
 
-  const profitPct = totalStake > 0 ? (guaranteedProfit / totalStake) * 100 : 0;
-
-  const cardStyle = {
-    border: "1px solid #ccc",
-    borderRadius: "8px",
-    padding: "1rem",
-    marginTop: "1rem",
-    background: "#fafafa",
-    color: "#000",
-  };
-
-  const betRowStyle = {
-    display: "flex",
-    justifyContent: "space-between",
-    padding: "0.5rem 0",
-    borderBottom: "1px solid #eee",
-  };
+  const profitPct = totalStake > 0 ? (netProfit / totalStake) * 100 : 0;
 
   return (
-    <div style={cardStyle}>
-      <h4>Arbitrage Group {groupId}</h4>
-      {enriched.map((b) => (
-        <div key={b.id} style={betRowStyle}>
-          <div>
-            <strong>{b.sportsbook}</strong> – {b.pick} ({b.odds})
+    <div className="rounded-2xl border border-slate-800 bg-slate-900/70 p-5 shadow-card">
+      <div className="flex items-center justify-between">
+        <h4 className="text-lg font-semibold text-slate-100">Arbitrage Group {groupId}</h4>
+        <span className="rounded-full border border-emerald-500/40 bg-emerald-500/15 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-emerald-100">
+          {bets.length} legs
+        </span>
+      </div>
+      <div className="mt-4 space-y-3">
+        {enriched.map((b) => (
+          <div
+            key={b.id}
+            className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-slate-800 bg-slate-900/80 px-4 py-3"
+          >
+            <div className="flex flex-col">
+              <span className="text-sm font-semibold text-slate-100">
+                {b.sportsbook} · {b.pick}
+              </span>
+              <span className="text-xs uppercase tracking-wide text-slate-500">Odds {b.odds}</span>
+            </div>
+            <div className="flex flex-wrap items-center gap-4 text-sm text-slate-200">
+              <span>
+                Stake <span className="font-semibold text-slate-100">${parseFloat(b.stake).toFixed(2)}</span>
+              </span>
+              <span>
+                Payout <span className="font-semibold text-emerald-200">${b.payout.toFixed(2)}</span>
+              </span>
+            </div>
           </div>
-          <div>Stake: ${parseFloat(b.stake).toFixed(2)}</div>
-          <div>Payout: ${b.payout.toFixed(2)}</div>
-          {/* <div>Result: {b.result}</div> */}
+        ))}
+      </div>
+      <div className="mt-6 flex flex-wrap items-center justify-between gap-4 border-t border-slate-800 pt-4 text-sm">
+        <div className="text-slate-300">
+          Total Stake
+          <span className="ml-2 font-semibold text-slate-100">${totalStake.toFixed(2)}</span>
         </div>
-      ))}
-
-      <div style={{ marginTop: "1rem", fontWeight: "bold" }}>
-        <div>Total Stake: ${totalStake.toFixed(2)}</div>
-        <div style={{ color: guaranteedProfit >= 0 ? "green" : "red" }}>
-          Net Profit: ${guaranteedProfit.toFixed(2)} ({profitPct.toFixed(2)}%)
+        <div className="text-slate-300">
+          Net Profit
+          <span
+            className={`ml-2 font-semibold ${netProfit >= 0 ? "text-emerald-300" : "text-rose-300"}`}
+          >
+            ${netProfit.toFixed(2)} ({profitPct.toFixed(2)}%)
+          </span>
         </div>
       </div>
     </div>
